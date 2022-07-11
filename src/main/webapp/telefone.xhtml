@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Index</title>
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:breadCrumb>
+			<p:menuitem />
+			<p:menuitem value="Home" action="index.jsf" />
+			<p:menuitem value="PrimeFaces" action="primefaces.jsf" />
+		</p:breadCrumb>
+	</h:form>
+
+	<h:form id="frmtelefones">
+		<p:messages showDetail="true" showSummary="false" id="msg" />
+		<h1>Telefones</h1>
+		<h:panelGrid columns="2">
+		
+			
+			<h:outputLabel value="Usuário:" />
+			<h:outputText value="#{telefoneBean.pessoa.nome}" />
+
+			<h:outputLabel value="ID:" />
+			<p:inputText value="#{telefoneBean.telefoneUser.id}" readonly="true" />
+
+			<h:outputLabel value="Número:" />
+			<p:inputMask value="#{telefoneBean.telefoneUser.numero}" mask="(99)9 9999-9999" />
+
+			<h:outputLabel value="Tipo:" />
+			<p:selectOneMenu value="#{telefoneBean.telefoneUser.tipo}">
+				<f:selectItem itemLabel="Selecione" itemValue="" />
+				<f:selectItem itemLabel="Celular" itemValue="CELULAR" />
+				<f:selectItem itemLabel="Residencial" itemValue="RESIDENCIAL" />
+				<f:selectItem itemLabel="Empresarial" itemValue="EMPRESARIAL" />
+
+			</p:selectOneMenu>
+		</h:panelGrid>
+		<br />
+		<br />
+		<p:commandButton value="Salvar" action="#{telefoneBean.salvar}"
+			ajax="false" />
+	</h:form>
+
+	<br />
+	<br />
+	
+
+	
+	
+
+	<h:form>
+		<p:dataTable value="#{telefoneBean.pessoa.telefoneUsers}" var="t"
+			cellpadding="5" border="1">
+
+			<p:column headerText="ID">
+
+				<h:outputText value="#{t.id}" />
+			</p:column>
+
+			<p:column headerText="Número">
+				<h:outputText value="#{t.numero}" />
+			</p:column>
+			
+			
+
+			<p:column headerText="EXCLUIR">
+				<h:commandLink title="Excluir" id="botaoremover" action="#{telefoneBean.removerTelelefone}">
+					<h:graphicImage url="/resources/img/excluir.png" width="25"
+						height="25" />
+					<f:setPropertyActionListener value="#{t}"
+						target="#{telefoneBean.telefoneUser}"/>
+					<f:ajax execute="botaoremover" render="@form :frmtelefones:msg"/>
+				</h:commandLink>
+			</p:column>
+			
+
+		</p:dataTable>
+	</h:form>
+
+</h:body>
+
+
+
+
+</html>

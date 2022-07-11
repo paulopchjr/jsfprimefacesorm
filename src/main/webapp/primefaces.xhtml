@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Usuários - PrimeFaces</title>
+</h:head>
+
+<h:body>
+
+	<h:form>
+		<p:breadCrumb>
+			<p:menuitem />
+			<p:menuitem value="Home" action="index.jsf" />
+			<p:menuitem value="PrimeFaces" action="primefaces.jsf" />
+
+		</p:breadCrumb>
+	</h:form>
+
+	<h:form id="frmUsuarios">
+		<h2>Cad Usuarios</h2>
+
+		<p:growl showDetail="true" autoUpdate="true" id="msg" />
+		<h:panelGrid columns="2">
+
+			<p:outputLabel value="Foto:" />
+			<p:fileUpload mode="advanced" label="Adicionar" auto="true"
+				update="imagem" fileUploadListener="#{usuariosBean.upload}" />
+
+			<h:outputLabel>Imagem:</h:outputLabel>
+			<h:graphicImage id="imagem"
+				value="#{usuariosBean.usuarioPessoa.imagem}" width="220"
+				height="200" />
+
+			<label for="idPessoa">ID</label>
+			<p:inputText value="#{usuariosBean.usuarioPessoa.id}" id="idPessoa"
+				readonly="true" />
+
+			<p:outputLabel value="Nome: " />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.nome}"
+				pt:placeholder="Informe o Nome" required="true"
+				requiredMessage="Informe o Nome" />
+
+			<p:outputLabel value="SobreNome:" />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.sobreNome}"
+				pt:placeholder="Informe o SobreNome" required="true"
+				requiredMessage="Informe o SobreNome" />
+
+			<p:outputLabel value="Sexo:" />
+			<p:selectOneMenu value="#{usuariosBean.usuarioPessoa.sexo}"
+				style="width:200px;">
+				<f:selectItem itemLabel="Selecione" itemValue="" />
+				<f:selectItem itemLabel="Masculino" itemValue="MASCULINO" />
+				<f:selectItem itemLabel="Feminino" itemValue="FEMININO" />
+			</p:selectOneMenu>
+
+			<p:outputLabel value="Cep:" />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.cep}"
+				mask="99999-999" pt:placeholder="Informe o Cep">
+				<f:ajax event="blur" execute="@this"
+					listener="#{usuariosBean.pesquisaCep}" render="localidade uf" />
+			</p:inputText>
+
+			<p:outputLabel value="Cidade:" />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.localidade}"
+				id="localidade" pt:placeholder="Informe a Cidade" />
+
+			<p:outputLabel value="Estado:" />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.uf}" id="uf"
+				pt:placeholder="Informe o Estado" />
+
+			<p:outputLabel value="Salário:" />
+			<p:inputNumber value="#{usuariosBean.usuarioPessoa.salario}"
+				required="true" requiredMessage="Informe o salario"
+				pt:placeholder="Informe o Sálario" />
+
+			<p:outputLabel value="Login:" />
+			<p:inputText value="#{usuariosBean.usuarioPessoa.login}"
+				required="true" requiredMessage="Informe o Login"
+				pt:placeholder="Informe o Login" />
+
+			<p:outputLabel value="Senha:" />
+			<p:password value="#{usuariosBean.usuarioPessoa.senha}"
+				required="true" requiredMessage="Informe o Senha"
+				pt:placeholder="Informe a Senha" />
+
+
+			<p:commandButton value="Salvar" action="#{usuariosBean.salvar}"
+				ajax="false" />
+			<p:commandButton value="Novo" action="#{usuariosBean.novo}"
+				immediate="true">
+				<f:ajax execute="@this" render="@form" />
+			</p:commandButton>
+			<h:outputLabel />
+		</h:panelGrid>
+	</h:form>
+	<br />
+	<br />
+
+	<h:form id="frmconsultas">
+		<p:panel header="Consultar Usuário">
+			<h:panelGrid>
+				<h:outputLabel value="Nome:" />
+				<p:inputText value="#{usuariosBean.filtonome}" />
+				<p:commandButton value="Buscar"
+					actionListener="#{usuariosBean.buscarporNome}"
+					update="frmtable, :graficoSalario" />
+			</h:panelGrid>
+		</p:panel>
+	</h:form>
+
+
+	<h:form id="frmtable">
+		<p:dataTable value="#{usuariosBean.pessoas}" var="p" cellpadding="15"
+			border="1">
+
+			<p:column headerText="ID">
+
+				<h:outputText value="#{p.id}" />
+			</p:column>
+
+			<p:column headerText="Nome">
+
+				<h:outputText value="#{p.nome}" />
+			</p:column>
+			
+			<p:column >
+				<h:commandLink value="Baixar" immediate="true" actionListener="#{usuariosBean.download}">
+					<f:param name="fileDownloadUserID" value="#{p.id}"/>
+				</h:commandLink>
+			
+			</p:column>
+
+			<p:column headerText="Telefones">
+				<h:commandLink immediate="true" action="telefone.jsf">
+					<h:graphicImage url="/resources/img/fone1.png" width="50"
+						height="25" />
+					<f:param name="codigouser" value="#{p.id}" />
+				</h:commandLink>
+			</p:column>
+			<p:column headerText="E-mails">
+				<p:commandLink update=":frmtable:dialogEmail"
+					oncomplete="PF('dialogEmail').show()">
+					<h:graphicImage url="/resources/img/email.png" width="25"
+						height="25" />
+					<f:setPropertyActionListener value="#{p}"
+						target="#{usuariosBean.usuarioPessoa}" />
+
+				</p:commandLink>
+			</p:column>
+			<p:column headerText="EDITAR">
+
+				<p:commandLink title="Editar" immediate="true" id="botaoeditar">
+					<h:graphicImage url="/resources/img/editar-texto.png" width="25"
+						height="25" />
+					<f:setPropertyActionListener value="#{p}"
+						target="#{usuariosBean.usuarioPessoa}" />
+					<f:ajax execute="botaoetidar" render=":frmUsuarios :graficoSalario" />
+
+
+				</p:commandLink>
+			</p:column>
+
+			<p:column headerText="EXCLUIR">
+				<p:commandLink title="Excluir" action="#{usuariosBean.excluir}"
+					update=":frmtable, :graficoSalario">
+					<h:graphicImage url="/resources/img/excluir.png" width="25"
+						height="25" />
+					<f:setPropertyActionListener value="#{p}"
+						target="#{usuariosBean.usuarioPessoa}" />
+
+				</p:commandLink>
+			</p:column>
+		</p:dataTable>
+
+		<p:dialog header="E-mails" id="dialogEmail" widgetVar="dialogEmail"
+			position="center" modal="true" width="490px" resizable="false">
+
+			<p:panelGrid columns="3">
+				<h:outputLabel value="E-Mail:" />
+				<p:inputText value="#{usuariosBean.emailUser.email}"
+					id="emailuseradd" />
+				<p:commandButton value="Adicionar"
+					actionListener="#{usuariosBean.addEmail}"
+					update="emailuseradd, dataTableEmail" />
+			</p:panelGrid>
+
+			<p:dataTable value="#{usuariosBean.usuarioPessoa.emails}" var="e"
+				id="dataTableEmail">
+				<p:column headerText="ID">
+					<h:outputText value="#{e.id}" />
+				</p:column>
+
+				<p:column headerText="E-mails">
+					<h:outputText value="#{e.email}" />
+				</p:column>
+
+				<p:column headerText="Remover">
+					<p:commandLink id="botaoremoveremail"
+						actionListener="#{usuariosBean.removerEmail}"
+						update="dataTableEmail">
+						<f:param name="codigoEmail" value="#{e.id}" />
+						<h:graphicImage url="/resources/img/excluir.png" width="25"
+							height="25" />
+					</p:commandLink>
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+	</h:form>
+	<p:chart type="bar" model="#{usuariosBean.barChartModel}"
+		id="graficoSalario" />
+
+
+
+</h:body>
+</html>
